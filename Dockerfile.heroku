@@ -14,14 +14,13 @@ ENV LABEL_STUDIO_ONE_CLICK_DEPLOY=1 \
 
 COPY deploy/heroku_run.sh /label-studio/deploy/
 
-# Ensure the script is executable
+# Temporarily switch to root to change permissions
+USER root
 RUN chmod +x /label-studio/deploy/heroku_run.sh
 
-# Switch to non-root user
+# Switch back to non-root user
 USER 1001
 
-# Set the entry point to use the Heroku run script
 ENTRYPOINT ["/label-studio/deploy/heroku_run.sh"]
 
-# Expose the required port
 EXPOSE 8080
