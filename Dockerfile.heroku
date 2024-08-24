@@ -1,8 +1,30 @@
+# FROM heartexlabs/label-studio:latest
+
+# ENV LABEL_STUDIO_ONE_CLICK_DEPLOY=1 \
+#     STORAGE_PERSISTENCE=0
+
+# COPY deploy/heroku_run.sh /label-studio/deploy/
+
+# ENTRYPOINT ["/bin/bash -c"]
+
 FROM heartexlabs/label-studio:latest
 
+# Set environment variables for Label Studio
 ENV LABEL_STUDIO_ONE_CLICK_DEPLOY=1 \
     STORAGE_PERSISTENCE=0
 
+# Copy your custom Heroku run script
 COPY deploy/heroku_run.sh /label-studio/deploy/
 
-ENTRYPOINT ["/bin/bash -c"]
+# Adjust file permissions to ensure the non-root user can execute the script
+RUN chown -R 1001:1001 /label-studio /usr/lib/python3/dist-packages /label-studio/deploy/heroku_run.sh \
+    && chmod +x /label-studio/deploy/heroku_run.sh
+
+# Switch to the non-root user
+USER 1001
+
+# Set the entry point to use the Heroku run script
+ENTRYPOINT ["/label-studio/deploy/heroku_run.sh"]
+
+# Expose the required port (default 8080)
+EXPOSE 8080
